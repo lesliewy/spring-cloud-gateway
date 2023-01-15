@@ -30,6 +30,10 @@ import org.springframework.util.IdGenerator;
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * 组合多种 RouteDefinitionLocator 的实现，为 RouteDefinitionRouteLocator 提供统一入口。
+ */
 public class CompositeRouteDefinitionLocator implements RouteDefinitionLocator {
 
 	private static final Log log = LogFactory.getLog(CompositeRouteDefinitionLocator.class);

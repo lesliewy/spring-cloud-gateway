@@ -49,6 +49,19 @@ public class FilteringWebHandler implements WebHandler {
 
 	protected static final Log logger = LogFactory.getLog(FilteringWebHandler.class);
 
+	/**
+	 * 默认一共有10个global filters:
+	 * [[GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.RemoveCachedBodyFilter@481558ce}, order = -2147483648],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.AdaptCachedBodyGlobalFilter@5f59ea8c}, order = -2147482648],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.NettyWriteResponseFilter@1f43cab7}, order = -1],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.ForwardPathFilter@7ea2412c}, order = 0],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.GatewayMetricsFilter@7c0f28f8}, order = 0],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter@2668c286}, order = 10000],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.config.GatewayNoLoadBalancerClientAutoConfiguration$NoLoadBalancerClientFilter@2abc8034}, order = 10150],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.WebsocketRoutingFilter@1c93b51e}, order = 2147483646],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.NettyRoutingFilter@554188ac}, order = 2147483647],
+	 * [GatewayFilterAdapter{delegate=org.springframework.cloud.gateway.filter.ForwardRoutingFilter@7f353a0f}, order = 2147483647]]
+	 */
 	private final List<GatewayFilter> globalFilters;
 
 	public FilteringWebHandler(List<GlobalFilter> globalFilters) {
@@ -71,6 +84,9 @@ public class FilteringWebHandler implements WebHandler {
 	 * this.combinedFiltersForRoute.clear();
 	 */
 
+	/**
+	 *
+	 */
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange) {
 		Route route = exchange.getRequiredAttribute(GATEWAY_ROUTE_ATTR);
@@ -114,6 +130,17 @@ public class FilteringWebHandler implements WebHandler {
 				if (this.index < filters.size()) {
 					GatewayFilter filter = filters.get(this.index);
 					DefaultGatewayFilterChain chain = new DefaultGatewayFilterChain(this, this.index + 1);
+					/** 进入 OrderedGatewayFilter#filter()
+					 *  -> org.springframework.cloud.gateway.handler.FilteringWebHandler.GatewayFilterAdapter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  -> 多个filters, 包括
+					 *  org.springframework.cloud.gateway.filter.NettyWriteResponseFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  org.springframework.cloud.gateway.filter.ForwardPathFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  org.springframework.cloud.gateway.filter.GatewayMetricsFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  org.springframework.cloud.gateway.filter.GatewayFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  AddResponseHeaderGatewayFilterFactory.GatewayFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 *  org.springframework.cloud.gateway.config.GatewayNoLoadBalancerClientAutoConfiguration.NoLoadBalancerClientFilter#filter(org.springframework.web.server.ServerWebExchange, org.springframework.cloud.gateway.filter.GatewayFilterChain)
+					 * */
 					return filter.filter(exchange, chain);
 				}
 				else {

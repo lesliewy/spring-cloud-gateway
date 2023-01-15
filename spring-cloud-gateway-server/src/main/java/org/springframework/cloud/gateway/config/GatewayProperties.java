@@ -35,6 +35,10 @@ import org.springframework.validation.annotation.Validated;
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * Spring cloud gateway 模块提供的外部化配置类
+ */
 @ConfigurationProperties(GatewayProperties.PREFIX)
 @Validated
 public class GatewayProperties {

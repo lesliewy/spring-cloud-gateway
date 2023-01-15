@@ -41,16 +41,27 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.t
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * gateway 中最基本的组件之一，表示一个具体的路由信息载体.
+ */
 public class Route implements Ordered {
 
+	/** 标识符，区别于其他 Route */
 	private final String id;
 
+	/** 路由指向的目的地 uri，即客户端请求最终被转发的目的地 */
 	private final URI uri;
 
+	/** 用于多个 Route 之间的排序，数值越小排序越靠前，匹配优先级越高 */
 	private final int order;
 
+	/** 谓语，表示匹配该 Route 的前置条件，即满足相应的条件才会被路由到目的地 uri */
 	private final AsyncPredicate<ServerWebExchange> predicate;
 
+	/** 过滤器用于处理切面逻辑，如路由转发前修改请求头等.
+	 *  Filter 最终是通过 filter chain 来形成链式调用的，每个 filter 处理完 pre filter 逻辑后委派给 filter chain，filter chain 再委派给下一下 filter。
+	 */
 	private final List<GatewayFilter> gatewayFilters;
 
 	private final Map<String, Object> metadata;

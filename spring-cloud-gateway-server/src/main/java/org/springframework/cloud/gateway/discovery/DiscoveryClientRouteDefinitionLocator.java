@@ -45,6 +45,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Spencer Gibb
  */
+
+/**
+ * 从注册中心( 例如，Eureka / Consul / Zookeeper / Etcd 等 )读取路由配置（RouteDefinition ）
+ */
 public class DiscoveryClientRouteDefinitionLocator implements RouteDefinitionLocator {
 
 	private static final Log log = LogFactory.getLog(DiscoveryClientRouteDefinitionLocator.class);

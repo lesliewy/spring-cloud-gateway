@@ -186,8 +186,13 @@ import org.springframework.web.reactive.socket.server.upgrade.ReactorNettyReques
  * @author Alberto C. Ríos
  * @author Olga Maciaszek-Sharma
  */
+
+/**
+ * springboot 3的AutoConfiguration 取消了之前的spring.factories配置.而是放在 /META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+ * 参考: https://www.cnblogs.com/throwable/p/16950353.html
+ */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.cloud.gateway.enabled", matchIfMissing = true)    // matchIfMissing 网关默认开启。
 @EnableConfigurationProperties
 @AutoConfigureBefore({ HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class })
 @AutoConfigureAfter({ GatewayReactiveLoadBalancerClientAutoConfiguration.class,
@@ -276,6 +281,9 @@ public class GatewayAutoConfiguration {
 				routeDefinitionLocator);
 	}
 
+	/**
+	 *  FilteringWebHandler, RouteLocator, GlobalCorsProperties 这3个都在上面，使用@Bean加载了.
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public RoutePredicateHandlerMapping routePredicateHandlerMapping(FilteringWebHandler webHandler,

@@ -19,6 +19,10 @@ package org.springframework.cloud.gateway.route;
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * 从存储器( 例如，内存 / Redis / MySQL 等 )读取路由配置（RouteDefinition ）
+ */
 public interface RouteDefinitionRepository extends RouteDefinitionLocator, RouteDefinitionWriter {
 
 }

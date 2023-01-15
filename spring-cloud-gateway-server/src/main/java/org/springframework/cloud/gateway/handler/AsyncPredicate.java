@@ -31,6 +31,13 @@ import org.springframework.web.server.ServerWebExchange;
 /**
  * @author Ben Hale
  */
+
+/**
+ * AsyncPredicate 定义了 3 种逻辑操作方法：
+ *  and ，与操作，即两个 Predicate 组成一个，需要同时满足。
+ *  negate，取反操作，即对 Predicate 匹配结果取反。
+ *  or，或操作，即两个 Predicate 组成一个，只需满足其一。
+ */
 public interface AsyncPredicate<T> extends Function<T, Publisher<Boolean>>, HasConfig {
 
 	default AsyncPredicate<T> and(AsyncPredicate<? super T> other) {

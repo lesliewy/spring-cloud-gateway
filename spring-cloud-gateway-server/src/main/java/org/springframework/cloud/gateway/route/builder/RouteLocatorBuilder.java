@@ -30,6 +30,10 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * Used to build a {@link RouteLocator}.
  */
+
+/**
+ * GatewayAutoConfiguration 中声明了bean.
+ */
 public class RouteLocatorBuilder {
 
 	private ConfigurableApplicationContext context;

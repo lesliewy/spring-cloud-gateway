@@ -59,12 +59,17 @@ public class GatewaySampleApplication {
 		// String uri = "http://httpbin.org:80";
 		// String uri = "http://localhost:9080";
 		return builder.routes()
+				/** 形成AsyncPredicate.AndAsyncPredicate. 其中left, right都是DefaultAsyncPredicate. left的delegate是HostRoutePredicateFactory， right的delegate是PathRoutePredicateFactory
+				 *  形成2个OrderedGatewayFilter: PrefixPathGatewayFilterFactory, AddResponseHeaderGatewayFilterFactory.
+				 * */
 				.route(r -> r.host("**.abc.org").and().path("/anything/png")
 					.filters(f ->
 							f.prefixPath("/httpbin")
 									.addResponseHeader("X-TestHeader", "foobar"))
 					.uri(uri)
 				)
+				/** 形成AsyncPredicate.AndAsyncPredicate, 不过right.delegate是ReadBodyRoutePredicateFactory
+				 * */
 				.route("read_body_pred", r -> r.host("*.readbody.org")
 						.and().readBody(String.class,
 										s -> s.trim().equalsIgnoreCase("hi"))
@@ -72,6 +77,10 @@ public class GatewaySampleApplication {
 							.addResponseHeader("X-TestHeader", "read_body_pred")
 					).uri(uri)
 				)
+				/**
+				 * 形成AsyncPredicate.DefaultAsyncPredicate, delegate是 HostRoutePredicateFactory.
+				 * 形成3个OrderedGatewayFilter: PrefixPathGatewayFilterFactory, AddResponseHeaderGatewayFilterFactory, ModifyRequestBodyGatewayFilterFactory.
+				 */
 				.route("rewrite_request_obj", r -> r.host("*.rewriterequestobj.org")
 					.filters(f -> f.prefixPath("/httpbin")
 							.addResponseHeader("X-TestHeader", "rewrite_request")
@@ -142,6 +151,7 @@ public class GatewaySampleApplication {
 					.uri(uri)
 				)
 				.route(r -> r.order(-1)
+						/** 会形成AsyncPredicate.AndAsyncPredicate, left, right都是DefaultAsyncPredicate. left的delegate是HostRoutePredicateFactory， right的delegate是PathRoutePredicateFactory */
 					.host("**.throttle.org").and().path("/get")
 					.filters(f -> f.prefixPath("/httpbin")
 									.filter(new ThrottleGatewayFilter()

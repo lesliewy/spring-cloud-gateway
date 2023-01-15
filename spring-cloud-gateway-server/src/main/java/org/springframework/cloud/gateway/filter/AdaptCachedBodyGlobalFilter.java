@@ -60,6 +60,7 @@ public class AdaptCachedBodyGlobalFilter implements GlobalFilter, Ordered, Appli
 		Route route = exchange.getAttribute(GATEWAY_ROUTE_ATTR);
 
 		if (body != null || !this.routesToCache.containsKey(route.getId())) {
+			/** 进入 FilteringWebHandler.DefaultGatewayFilterChain#filter() */
 			return chain.filter(exchange);
 		}
 

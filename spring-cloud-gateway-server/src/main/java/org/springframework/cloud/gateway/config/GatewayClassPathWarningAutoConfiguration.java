@@ -47,6 +47,9 @@ public class GatewayClassPathWarningAutoConfiguration {
 
 	}
 
+	/**
+	 * 用于检查项目是否正确导入 spring-boot-starter-webflux 依赖，而不是错误导入 spring-boot-starter-web 依赖。
+	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingClass("org.springframework.web.reactive.DispatcherHandler")
 	protected static class WebfluxMissingFromClasspathConfiguration {

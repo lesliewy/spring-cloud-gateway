@@ -37,15 +37,21 @@ import static org.springframework.util.StringUtils.tokenizeToStringArray;
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * 用来对 Route 信息进行定义，最终会被 RouteLocator 解析成 Route。
+ */
 @Validated
 public class RouteDefinition {
 
 	private String id;
 
+	/** 谓语定义数组。请求通过 predicates 判断是否匹配。在 Route 里，PredicateDefinition 转换成 Predicate */
 	@NotEmpty
 	@Valid
 	private List<PredicateDefinition> predicates = new ArrayList<>();
 
+	/** 过滤器定义数组。在 Route 里，FilterDefinition 转换成 GatewayFilter */
 	@Valid
 	private List<FilterDefinition> filters = new ArrayList<>();
 
@@ -54,6 +60,7 @@ public class RouteDefinition {
 
 	private Map<String, Object> metadata = new HashMap<>();
 
+	/** 顺序。当请求匹配到多个路由时，使用顺序小的。 */
 	private int order = 0;
 
 	public RouteDefinition() {

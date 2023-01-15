@@ -40,6 +40,10 @@ import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.G
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * 在 GatewayAutoConfiguration 中自动加载.
+ */
 public class RoutePredicateHandlerMapping extends AbstractHandlerMapping {
 
 	private final FilteringWebHandler webHandler;
@@ -93,6 +97,7 @@ public class RoutePredicateHandlerMapping extends AbstractHandlerMapping {
 							logger.debug("Mapping [" + getExchangeDesc(exchange) + "] to " + r);
 						}
 
+						/** 保存找到的route, 返回的是webhandler, 在FilteringWebHandler.handle()中会取出route. */
 						exchange.getAttributes().put(GATEWAY_ROUTE_ATTR, r);
 						return Mono.just(webHandler);
 					}).switchIfEmpty(Mono.empty().then(Mono.fromRunnable(() -> {
@@ -124,9 +129,14 @@ public class RoutePredicateHandlerMapping extends AbstractHandlerMapping {
 	}
 
 	protected Mono<Route> lookupRoute(ServerWebExchange exchange) {
+		/**
+		 * 这里routeLocator是 CachingRouteLocator
+		 * routes 就是用户定义的，包括代码builder.routes().route(), 也包括配置文件中spring.cloud.gateway.routes.
+		 */
 		return this.routeLocator.getRoutes()
 				// individually filter routes so that filterWhen error delaying is not a
 				// problem
+				/** 执行route的predicate */
 				.concatMap(route -> Mono.just(route).filterWhen(r -> {
 					// add the current route we are testing
 					exchange.getAttributes().put(GATEWAY_PREDICATE_ROUTE_ATTR, r.getId());

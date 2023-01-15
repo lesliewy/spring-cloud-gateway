@@ -31,6 +31,10 @@ import static org.springframework.util.StringUtils.tokenizeToStringArray;
 /**
  * @author Spencer Gibb
  */
+
+/**
+ * 用于定义 Predicate
+ */
 @Validated
 public class PredicateDefinition {
 
